@@ -11,21 +11,28 @@ def get_winner(board):
     - Mất vua trắng -> black thắng
     - Mất vua đen -> white thắng
     """
-    white_kings = sum(row.count("wK") for row in board.board)
-    black_kings = sum(row.count("bK") for row in board.board)
-    if white_kings == 0 and black_kings == 0:
+    white_king_exists = any("wK" in row for row in board.board)
+    black_king_exists = any("bK" in row for row in board.board)
+    
+    if not white_king_exists and not black_king_exists:
         return "draw"
-    if white_kings == 0:
+    if not white_king_exists:
         return "black"
-    if black_kings == 0:
+    if not black_king_exists:
         return "white"
+    
+    current_color = "white" if len(board.move_history) % 2 == 0 else "black"
+    if board.is_check(current_color):
+        return "white" if current_color == "black" else "black"
     return "draw"
+
 
 def run_match(ai_agent, random_agent, rounds=10):
     # TODO: Chạy n ván đấu giữa AI và random agent, thống kê tỉ lệ thắng, đánh giá hiệu quả AI
     # Chạy n ván đấu giữa AI và random agent, thống kê tỉ lệ thắng, đánh giá hiệu quả AI
     results = []
-    for _ in range(rounds):
+    for i in range(1, rounds + 1):
+        print(f"Game {i}:")
         board = Board()
         current = "white"
         while not board.is_game_over():
@@ -45,7 +52,7 @@ def run_match(ai_agent, random_agent, rounds=10):
             results.append("lose")
         else:
             results.append("draw")
-
+        print(f"Game {i}: {winner.upper()} wins." if winner in ["white", "black"] else f"Game {i}: Draw.")
     wins = results.count("win")
     return wins
 

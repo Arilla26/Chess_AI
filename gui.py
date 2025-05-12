@@ -177,21 +177,7 @@ class ChessGUI:
             self.draw_board()
             self.draw_pieces()
 
-            # Check game state
-            if self.board.is_game_over():
-                if self.board.is_check(player_turn):
-                    winner = "black" if player_turn == "white" else "white"
-                    under_msg = "Black is checkmated!" if player_turn == "white" else "White is checkmated!"
-                    if winner == self.human_color:
-                        ending_msg = "You Win"
-                    else:
-                        ending_msg = "You Lose"
-                else:
-                    ending_msg = "Stalemate! It's a draw."
-                continue
-            elif self.board.is_check(player_turn):
-                king_pos = self.board.get_king_position(player_turn)
-                self.highlight_positions([king_pos], (255, 0, 0))
+
 
             pygame.display.flip()
 
@@ -234,12 +220,56 @@ class ChessGUI:
                                 end_row = 8 - int(move[3])
                                 self.legal_moves_for_selected.append((end_row, end_col))
 
+            if self.board.is_game_over():
+                # 1) Tính toán message kết thúc
+                if self.board.is_check(player_turn):
+                    winner = "black" if player_turn == "white" else "white"
+                    print(f"Checkmate! {"black" if winner == "white" else "white"} bị chiếu hết.")
+                    under_msg = "Black is checkmated!" if player_turn == "white" else "White is checkmated!"
+                    ending_msg = "You Win" if winner == self.human_color else "You Lose"
+                else:
+                    ending_msg = "Stalemate! It's a draw."
+                    print("Stalemate! It's a draw.")
+
+                # 2) Vẽ màn hình ending 1 lần
+                self.win.fill((0, 0, 0))
+                self.draw_board()
+                self.draw_pieces()
+                # bạn có thể vẽ thêm ending_msg, under_msg lên màn
+                pygame.display.flip()
+
+                # 3) Đợi 5 giây rồi out
+                pygame.time.wait(5000)
+                self.running = False
+                break
+
             if player_turn == self.ai.color:
                 ai_move = self.ai.get_move(self.board)
                 if ai_move:
                     self.board.make_move(ai_move)
                     player_turn = self.human_color
                     self.turn_time = 60
+
+            if self.board.is_game_over():
+                # 1) Tính toán message kết thúc
+                if self.board.is_check(player_turn):
+                    winner = "black" if player_turn == "white" else "white"
+                    under_msg = "Black is checkmated!" if player_turn == "white" else "White is checkmated!"
+                    ending_msg = "You Win" if winner == self.human_color else "You Lose"
+                else:
+                    ending_msg = "Stalemate! It's a draw."
+
+                # 2) Vẽ màn hình ending 1 lần
+                self.win.fill((0, 0, 0))
+                self.draw_board()
+                self.draw_pieces()
+                # bạn có thể vẽ thêm ending_msg, under_msg lên màn
+                pygame.display.flip()
+
+                # 3) Đợi 5 giây rồi out
+                pygame.time.wait(5000)
+                self.running = False
+                break
 
         while True:
             self.waiting_ending(ending_msg, under_msg)

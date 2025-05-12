@@ -25,6 +25,7 @@ def evaluate(board, color):
         if board.piece_at(square): 
             if board.piece_at(square)["color"] == color:
                 score += 30 
+
     for row in SQUARES:
         for square in row:
             piece = board.piece_at(square)
@@ -34,12 +35,11 @@ def evaluate(board, color):
                     score += piece_value
                 else:
                     score -= piece_value
-
+                   
                 # Thưởng cho việc phát triển quân
                 if piece["piece_type"] in ["P" ,"K", "B"] and square not in defaultPosition(piece):
                     if piece["color"] == color:
                         score += 20 
-
     return score
 
 def move_heuristic(board, move):

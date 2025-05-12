@@ -23,6 +23,7 @@ class Board:
             "black_kingside": True,
             "black_queenside": True
         }
+        self.halfmove_clock = 0
 
     def get_legal_moves(self, color):
         move_gen = MoveGenerator(self.board, color, self)
@@ -58,6 +59,11 @@ class Board:
         end_row = 8 - int(move[3])
         piece = self.board[start_row][start_col]
         captured = self.board[end_row][end_col]
+        # Reset halfmove clock nếu có bắt quân hoặc tốt đi
+        if captured != "--":
+            self.halfmove_clock = 0
+        #else:
+            #self.halfmove_clock += 1
         # Castling
         if piece[1] == 'K' and abs(end_col - start_col) == 2:
             if end_col > start_col:
@@ -131,6 +137,9 @@ class Board:
         self.en_passant_target = prev_en_passant
 
     def is_game_over(self):
+        if(self.halfmove_clock >= 50):
+            print("Stalemate! Hòa do 50 nước không ăn gì.")
+            return True
         white_king_exists = False
         black_king_exists = False
         for row in self.board:
@@ -145,10 +154,10 @@ class Board:
         legal_moves = self.get_legal_moves(current_color)
         if not legal_moves:
             if self.is_check(current_color):
-                print(f"Checkmate! {current_color} bị chiếu hết.")
+                
                 return True
             else:
-                print("Stalemate! Hòa do không còn nước đi hợp lệ.")
+                
                 return True
         return False
 
@@ -160,7 +169,7 @@ class Board:
                       'e': 4, 'f': 5, 'g': 6, 'h': 7}
         piece = self.get_piece_at(8 - int(square[1]), column_map[square[0]])
         if piece != "--":
-            color = 1 if piece[0] == 'w' else 0
+            color = 1 if piece[0] == "w" else 0
             piece_type = piece[1]
             return {"color": color, "piece_type": piece_type}
         else:

@@ -9,14 +9,14 @@ class MinimaxAgent:
 
     def get_move(self, board):
         if self.depth == 0 or board.is_game_over():
-            return evaluate(board, self.color)
+            color = 1 if self.color == "white" else 0
+            return evaluate(board, color)
         alpha = float("-inf")
         beta = float("inf")
         bestMove = None
 
         legalMoves = list(board.get_legal_moves(self.color))
         legalMoves = sorted(legalMoves, key=lambda m: move_heuristic(board, m), reverse=1)
-        print(legalMoves)
         for move in legalMoves:
             board.make_move(move)
             eval = self.minimax(board, 1, self.depth, alpha, beta, False)
@@ -28,7 +28,8 @@ class MinimaxAgent:
 
     def minimax(self, board, depth, depthMax, alpha, beta, maximizing):
         if depth == depthMax or board.is_game_over():
-            return evaluate(board, self.color)
+            color = 1 if self.color == "white" else 0
+            return evaluate(board, color)
         
         if maximizing:
             legalMoves = list(board.get_legal_moves(self.color))
